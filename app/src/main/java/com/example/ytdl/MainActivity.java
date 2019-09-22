@@ -28,6 +28,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
@@ -58,12 +59,15 @@ import com.yausername.youtubedl_android.YoutubeDLUpdater;
 import org.mortbay.jetty.Main;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -178,6 +182,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        File f = new File(Environment.getDataDirectory() + "/data" + getPackageName(), "config.properties");
+        if(f.exists()) {
+            FileInputStream fis = null;
+            try {
+                fis = new FileInputStream(f);
+                Properties p = new Properties();
+                p.load(fis);
+                Key = p.getProperty("APIKey");
+                System.out.println(Key);
+            }
+            catch(Exception Ex)
+            {
+                Ex.printStackTrace();
+            }
+        }
         mainLayout = findViewById(R.id.mainLayout);
         setSupportActionBar(findViewById(R.id.toolbar));
         VideoList = findViewById(R.id.ResultList);
@@ -286,6 +305,42 @@ public class MainActivity extends AppCompatActivity {
     {
         getMenuInflater().inflate(R.menu.menu_main, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
+        MenuItem settingsItem = menu.findItem(R.id.action_options);
+        settingsItem.setOnMenuItemClickListener(item -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setMessage("API키 설정");
+            final EditText keyTextView = new EditText(MainActivity.this);
+            keyTextView.setText(Key);
+            builder.setView(keyTextView);
+            builder.setPositiveButton("저장", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Key = keyTextView.getText().toString();
+                    File file = new File(Environment.getDataDirectory() + "/data/" + getPackageName(), "config.properties");
+                    FileOutputStream fos = null;
+                    try{
+                        if(!file.exists()){
+                            file.createNewFile();
+                        }
+                        fos = new FileOutputStream(file);
+                        Properties props = new Properties();
+                        props.setProperty("APIKey" , Key);
+                        props.store(fos, "Key info");
+                    }catch (Exception Ex){
+                        Ex.printStackTrace();
+                    }
+                    dialog.dismiss();
+                }
+            });
+            builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            builder.create().show();
+            return false;
+        });
         SearchView searchView = (SearchView)searchItem.getActionView();
         searchView.setMaxWidth(Integer.MAX_VALUE);
         searchView.setQueryHint("검색...");
@@ -325,7 +380,7 @@ public class MainActivity extends AppCompatActivity {
                                                     dialog.dismiss();
                                                 }
                                             });
-                                    builder.create();
+                                    builder.create().show();
                                     return;
                                 }
                                 nextToken = Resp.getNextPageToken();
