@@ -13,32 +13,19 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.PopupMenu;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 
-//import com.github.axet.vget.VGet;
-//import com.github.axet.vget.info.VGetParser;
-//import com.github.axet.vget.vhs.YouTubeInfo;
-//import com.github.axet.vget.vhs.YouTubeParser;
-//import com.github.axet.vget.vhs.YouTubeQParser;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -46,17 +33,11 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
-import com.google.common.base.Utf8;
-import com.google.common.util.concurrent.AbstractScheduledService;
 import com.yausername.ffmpeg.FFmpeg;
 import com.yausername.youtubedl_android.DownloadProgressCallback;
 import com.yausername.youtubedl_android.YoutubeDL;
 import com.yausername.youtubedl_android.YoutubeDLException;
 import com.yausername.youtubedl_android.YoutubeDLRequest;
-import com.yausername.youtubedl_android.YoutubeDLResponse;
-import com.yausername.youtubedl_android.YoutubeDLUpdater;
-
-import org.mortbay.jetty.Main;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -65,11 +46,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
-import java.util.Locale;
 import java.util.Properties;
-import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -78,13 +55,14 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 
 
+
 public class MainActivity extends AppCompatActivity {
     View mainLayout;
     ListView VideoList;
     VideoListAdapter listAdapter;
     static String nextToken = "";
     static String query = "";
-    static String Key = "AIzaSyAuASBsHHng4K1hA6g6gUe2aYeZsmFlNLk";
+    static String Key = "AIzaSyAIfzvhK5TpgtpXAuItLlKd-jjM3byoIOw";
     static boolean isSearching = false;
     ProgressDialog Downloadpd;
     CompositeDisposable disposable = new CompositeDisposable();
