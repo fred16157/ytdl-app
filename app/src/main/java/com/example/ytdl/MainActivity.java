@@ -4,12 +4,14 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -121,14 +123,18 @@ public class MainActivity extends AppCompatActivity {
                 FFmpeg.getInstance().init(getApplication());
                 final YoutubeDLRequest req = new YoutubeDLRequest("https://www.youtube.com/watch?v=" + video.getVideoId());
                 File path = getDownloadLocation();
+                String AbsolutePath = path.getAbsolutePath() + "/" + video.getTitle().replaceAll("/", "|");
                 if(!isAudio) {
-                    req.setOption("-o", path.getAbsolutePath() + "/" + video.getTitle() + ".%(ext)s");
+                    req.setOption("-o", AbsolutePath + ".%(ext)s");
+                    AbsolutePath += ".mp4";
                 }
                 else {
-                    req.setOption("-o", path.getAbsolutePath() + "/" + video.getTitle() + ".%(ext)s");
+                    req.setOption("-o", AbsolutePath + ".%(ext)s");
                     req.setOption("-x");
                     req.setOption("--audio-format", "mp3");
+                    AbsolutePath += ".mp3";
                 }
+                final String apath = AbsolutePath;
                 Downloadpd = new ProgressDialog(MainActivity.this);
                 Downloadpd.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
                 Downloadpd.setMessage("다운로드 시작");
@@ -136,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
                 System.out.println("다이얼로그 띄움");
                 Disposable disp = Observable.fromCallable(() -> YoutubeDL.getInstance().execute(req, callback)).subscribeOn(Schedulers.newThread()).observeOn(AndroidSchedulers.mainThread()).subscribe(YoutubeDLResponse -> {
                     Downloadpd.setMessage("다운로드 완료");
+                    sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://"+ apath)));
                     Downloadpd.dismiss();
                 });
                 disposable.add(disp);
